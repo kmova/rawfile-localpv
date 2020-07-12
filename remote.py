@@ -10,7 +10,7 @@ def scrub(volume_id):
 
 
 @remote_fn
-def init_rawfile(volume_id, size):
+def init_rawfile(volume_id, size, fs_type):
     import time
     import rawfile_util
     from pathlib import Path
@@ -32,7 +32,12 @@ def init_rawfile(volume_id, size):
         },
     )
     run(f"truncate -s {size} {img_file}")
-    run(f"mkfs.ext4 {img_file}")
+    if fs_type == "ext4":
+        run(f"mkfs.ext4 {img_file}")
+    elif fs_type == "btrfs":
+        run(f"mkfs.btrfs {img_file}")
+    else:
+        raise Exception(f"Unsupported fsType: {fs_type}")
 
 
 @remote_fn
